@@ -8,79 +8,68 @@ import VisuallyHidden from "../VisuallyHidden";
 
 const STYLES = {
   small: {
-    borderBottom: "1px solid ${COLORS.black}",
-    fontSize: 14 +"px",
-    //iconsize
-
+    borderThickness: 1,
+    fontSize: 14,
+    iconSize: 16,
+    height: 24 
   },
-
-  large:{
-    borderBottom: "2px solid ${COLORS.black}",
-    fontSize: 18 +"px",
-  }
-
+  large: {
+    borderThickness: 2,
+    fontSize: 18,
+    iconSize: 24,
+    height: 36 
+  }, 
 };
 
-
-const IconInput = ({ label, icon, width = 250, size, placeholder }) => {
+const IconInput = ({ label, icon, width = 250, size, ...delegated }) => {
   const styles = STYLES[size];
 
   return (
     <Wrapper>
-      <IconWrapper>
-        <Icon id={icon} size={size} strokeWidth={1} />
-      </IconWrapper>
       <VisuallyHidden>{label}</VisuallyHidden>
-      <TextInputBase
-        placeholder={placeholder}
-        style={{ "--width": width + "px" }}
-      ></TextInputBase>
+      <IconWrapper style={{ "--size": styles.iconSize + "px" }}> {/*We are just creating custom css variable here with 16 as it's value, how does this become the size of the height? Answer is that we used it in Line 54,when declaring the height */}
+        <Icon id={icon} strokeWidth={1} size={styles.iconSize} />
+      </IconWrapper>
+      <TextInput {...delegated} style={{'--width': width + "px", '--height': styles.height + "px", '--borderThickness': styles.borderThickness +"px", '--font-size': styles.fontSize + "px"}}/>
     </Wrapper>
   );
 };
 
-const TextInputBase = styled.input`
-  width: var(--width);
-  height: 24px; //just added this
-  border: none;
-  border-bottom: 1px solid ${COLORS.black};
+const Wrapper = styled.label`
+  display: block;
+  position: relative;
   color: ${COLORS.gray700};
-  font-weight: 700;
-  padding-left: 24px; // Shift the placeholder text to the right.
-  outline-offset: 2px;
 
-  &::placeholder {
-    color: ${COLORS.gray500};
-    font-weight: normal;
+  &:hover{
+    color: ${COLORS.black};
+
   }
-
-  &:focus {
-    border-radius: 2px;
-    border: 2px solid -webkit-focus-ring-color;
-    border: 2px solid  #4374cb;
-  }
-
-
 `;
 
 const IconWrapper = styled.div`
   position: absolute;
   top: 0;
   bottom: 0;
-  margin: auto;
-  width: 16px;
-  height: 16px;
+  margin: auto 0;
+  height: var(--size);
 `;
 
-const Wrapper = styled.div`
-  position: relative;
+const TextInput = styled.input`
+  height: var(--height)rem;
+  width: var(--width);
+  border: none;
+  border-bottom: var(--borderThickness) solid ${COLORS.black};
+  padding-left: var(--height); //We want the text to start from the size (width) of IconWrapper;And interestingly the width of IconWrapper is perfectly th height of TextInput
+  color: inherit; /*How does setting the color as inherit on the textinput impact the adajcent element: Icon? Answer is that this inherit the color of the parent, explicitly, so does the adjacent implicitly.*/
+  font-weight: 700;
+  font-size: var(--font-size);
+  outline-offset: 2px;
+  
 
-  color: ${COLORS.gray700};
-  &:hover {
-    color: ${COLORS.black};
-    font-weight: 700;
+  &::placeholder{
+    font-weight: 400;
+    color: ${COLORS.gray500};
   }
- 
 `;
 
 export default IconInput;
